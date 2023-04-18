@@ -4,7 +4,7 @@ Group J's repo for exercises of the course ***ML for crowd modeling and simulati
 # Team Members: (Please fill your name and your email in by yourself.)
  - HU, Wenbin ```wenbin.hu@tum.de``` 
  - Tang, Yilin ```yilin.tang@tum.de```
- -
+ - SUN, Mei   ```mei.sun@tum.de```
  -
  -
  
