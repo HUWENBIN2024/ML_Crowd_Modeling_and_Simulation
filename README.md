@@ -11,3 +11,7 @@ Group J's repo for exercises of the course ***ML for crowd modeling and simulati
 # Notes:
 Please build your branch named as your identities. Work on your own branch and merge it into the main branch before thinking twice. 
 
+# Exercises:
+ - ex 0: for study, reference, env building, ...
+ - ex 1: deadline: 01/05/2023
+ - ...
