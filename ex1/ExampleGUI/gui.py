@@ -13,7 +13,7 @@ def load_json(path):
     args: 
         path: path of the json file you need to configure your scenario.
     '''
-    f = open('../scenarios/sc0.json')
+    f = open(path)
     config_dist = json.load(f)
     f.close()
     return config_dist
@@ -27,17 +27,25 @@ class MainGUI():
 
     def __init__(self, args):
         self.args = args
+        self.sc = None
 
-    def create_scenario(self, ):
-        print('create not implemented yet')
+    def create_scenario(self, canvas, canvas_image, win):
+        for i in range(self.args.iter):
+            self.step_scenario(canvas, canvas_image)
+            win.update()
+            time.sleep(0.05)
 
+    def restart_scenario(self, canvas, canvas_image):
+        '''
+        restarts a scenario.
 
-    def restart_scenario(self, ):
-        pass
-        # self.load_scenario(*self.restart_dict['args'])
+        args :
+            canvas (tkinter.Canvas): Add _description_
+            canvas_image (missing _type_): Add _description_
+        '''
+        self.load_scenario(canvas, canvas_image)
 
-
-    def step_scenario(self, scenario, canvas, canvas_image):
+    def step_scenario(self, canvas, canvas_image):
         """
         Moves the simulation forward by one step, and visualizes the result.
 
@@ -46,25 +54,34 @@ class MainGUI():
             canvas (tkinter.Canvas): Add _description_
             canvas_image (missing _type_): Add _description_
         """
-        scenario.update_step()
-        scenario.to_image(canvas, canvas_image)
+        self.sc.update_step()
+        self.sc.to_image(canvas, canvas_image)
 
-    def load_scenario(self, ):
+    def load_scenario(self, canvas, canvas_image):
         '''
         load a specific scenario described by a json file.
 
         args:
             path : path of the json file you need to configure your scenario.
+            canvas (tkinter.Canvas): Add _description_.
+            canvas_image (missing _type_): Add _description_.
         '''
         config_dist = load_json(self.args.json_path)
         sc = Scenario(config_dist['shape'][0], config_dist['shape'][0])
 
         targets = np.array((config_dist['targets'])).T
-        obstacles = np.array((config_dist['obstacles'])).T
+        try:
+            obstacles = np.array((config_dist['obstacles'])).T
+            sc.grid[obstacles[0], obstacles[1]] = sc.NAME2ID['OBSTACLE']
+        except:
+            pass
         sc.grid[targets[0], targets[1]] = sc.NAME2ID['TARGET']
-        sc.grid[obstacles[0], obstacles[1]] = sc.NAME2ID['OBSTACLE']
+        
         sc.recompute_target_distances()
         sc.pedestrians = [Pedestrian(p[0], p[1]) for p in config_dist['pedestrians']]
+        self.sc = sc
+        # scenario to image
+        self.sc.to_image(canvas, canvas_image)
 
         return sc
 
@@ -102,37 +119,13 @@ class MainGUI():
         canvas.pack()
 
         # create a scenario configured by a json file
-        sc = self.load_scenario()
+        self.load_scenario(canvas, canvas_image)
 
-        # scenario to image
-        sc.to_image(canvas, canvas_image)
-        
-        '''  # sc = Scenario(100, 100)
-
-        # sc.grid[23, 25] = Scenario.NAME2ID['TARGET']
-        # sc.grid[23, 45] = Scenario.NAME2ID['TARGET']
-        # sc.grid[43, 55] = Scenario.NAME2ID['TARGET']
-        # sc.recompute_target_distances()
-
-        # sc.pedestrians = [
-        #     Pedestrian((31, 2), 2.3),
-        #     Pedestrian((1, 10), 2.1),
-        #     Pedestrian((80, 70), 2.1)
-        # ]
-
-        # can be used to show pedestrians and targets
-        # sc.to_image(canvas, canvas_image)
-
-        # can be used to show the target grid instead
-        # sc.target_grid_to_image(canvas, canvas_image)
-        
-        '''
-
-        btn = Button(win, text='Step simulation', command=lambda: self.step_scenario(sc, canvas, canvas_image))
+        btn = Button(win, text='Step simulation', command=lambda: self.step_scenario(canvas, canvas_image))
         btn.place(x=20, y=10)
-        btn = Button(win, text='Restart simulation', command=self.restart_scenario)
+        btn = Button(win, text='Restart simulation', command=lambda: self.restart_scenario(canvas, canvas_image))
         btn.place(x=200, y=10)
-        btn = Button(win, text='Create simulation', command=self.create_scenario)
+        btn = Button(win, text='Create simulation', command=lambda: self.create_scenario(canvas, canvas_image, win))
         btn.place(x=380, y=10)
 
         win.mainloop()
