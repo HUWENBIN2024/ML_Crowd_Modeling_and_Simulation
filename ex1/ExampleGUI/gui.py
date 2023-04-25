@@ -13,7 +13,7 @@ def load_json(path):
     args: 
         path: path of the json file you need to configure your scenario.
     '''
-    f = open('../scenarios/sc0.json')
+    f = open(path)
     config_dist = json.load(f)
     f.close()
     return config_dist
@@ -70,9 +70,13 @@ class MainGUI():
         sc = Scenario(config_dist['shape'][0], config_dist['shape'][0])
 
         targets = np.array((config_dist['targets'])).T
-        obstacles = np.array((config_dist['obstacles'])).T
+        try:
+            obstacles = np.array((config_dist['obstacles'])).T
+            sc.grid[obstacles[0], obstacles[1]] = sc.NAME2ID['OBSTACLE']
+        except:
+            pass
         sc.grid[targets[0], targets[1]] = sc.NAME2ID['TARGET']
-        sc.grid[obstacles[0], obstacles[1]] = sc.NAME2ID['OBSTACLE']
+        
         sc.recompute_target_distances()
         sc.pedestrians = [Pedestrian(p[0], p[1]) for p in config_dist['pedestrians']]
         self.sc = sc
