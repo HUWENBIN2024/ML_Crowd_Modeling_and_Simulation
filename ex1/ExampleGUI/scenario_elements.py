@@ -64,9 +64,9 @@ class Scenario:
     }
     NAME2COLOR = {
         'EMPTY': (255, 255, 255),
-        'PEDESTRIAN': (255, 0, 0),
-        'TARGET': (0, 0, 255),
-        'OBSTACLE': (255, 0, 255)
+        'PEDESTRIAN': (255, 0, 0), # red
+        'TARGET': (0, 0, 255),     # violet
+        'OBSTACLE': (0, 255, 0)  # yellow
     }
     NAME2ID = {
         ID2NAME[0]: 0,
