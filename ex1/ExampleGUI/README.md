@@ -19,12 +19,14 @@ python main.py --json_path <path of a json file>
 example:
 
 ```
-python main.py --json_path ../scenarios/sc0.json
+python main.py --json_path ../scenarios/sc0.json --iter 100
 ```
 
 # Json
+
 An example:
 Coordinates are form of (x, y).
+
 ```
 {
     "shape": [200, 200],
@@ -41,6 +43,6 @@ Coordinates are form of (x, y).
                     [20, 10],
                     [21, 10]
                  ]
-                
+              
 }
 ```
