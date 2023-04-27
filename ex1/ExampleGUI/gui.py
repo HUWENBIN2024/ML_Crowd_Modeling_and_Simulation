@@ -84,6 +84,8 @@ class MainGUI():
         self.sc.to_image(canvas, canvas_image)
 
         return sc
+    def visual_cost(self, canvas, canvas_image):
+        self.sc.target_grid_to_image('cost', canvas, canvas_image)
 
     def exit_gui(self, ):
         """
@@ -100,7 +102,7 @@ class MainGUI():
         """
         # create an environment
         win = tkinter.Tk()
-        win.geometry('500x500')  # setting the size of the window
+        win.geometry('800x800')  # setting the size of the window
         win.title('Cellular Automata GUI')
 
         # add a menu
@@ -127,5 +129,7 @@ class MainGUI():
         btn.place(x=200, y=10)
         btn = Button(win, text='Create simulation', command=lambda: self.create_scenario(canvas, canvas_image, win))
         btn.place(x=380, y=10)
+        btn = Button(win, text='Cost Visualization', command=lambda: self.visual_cost(canvas, canvas_image, win))
+        btn.place(x=550, y=10)
 
         win.mainloop()

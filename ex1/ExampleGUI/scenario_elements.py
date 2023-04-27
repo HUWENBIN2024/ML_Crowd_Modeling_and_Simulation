@@ -11,10 +11,15 @@ class Pedestrian:
     def __init__(self, position, desired_speed):
         self._position = position
         self._desired_speed = desired_speed
+        self._track = []
 
     @property
     def position(self):
         return self._position
+    
+    @property
+    def track(self):
+        return self._track
 
     @property
     def desired_speed(self):
@@ -30,7 +35,9 @@ class Pedestrian:
             (int(x + self._position[0]), int(y + self._position[1]))
             for x in [-1, 0, 1]
             for y in [-1, 0, 1]
-            if 0 <= x + self._position[0] < scenario.width and 0 <= y + self._position[1] < scenario.height and np.abs(x) + np.abs(y) > 0
+            if 0 <= x + self._position[0] < scenario.width 
+            and 0 <= y + self._position[1] < scenario.height 
+            and np.abs(x) + np.abs(y) > 0
         ]
 
     def update_step(self, scenario):
@@ -48,6 +55,8 @@ class Pedestrian:
             if next_cell_distance > scenario.target_distance_grids[n_x, n_y]:
                 next_pos = (n_x, n_y)
                 next_cell_distance = scenario.target_distance_grids[n_x, n_y]
+                self._track.append(self._position)
+
         self._position = next_pos
 
 
@@ -66,7 +75,8 @@ class Scenario:
         'EMPTY': (255, 255, 255),
         'PEDESTRIAN': (255, 0, 0), # red
         'TARGET': (0, 0, 255),     # violet
-        'OBSTACLE': (0, 255, 0)  # yellow
+        'OBSTACLE': (0, 255, 0) , # yellow
+        'TRACK':(128,125,125) #grey
     }
     NAME2ID = {
         ID2NAME[0]: 0,
@@ -129,12 +139,14 @@ class Scenario:
         """
         for pedestrian in self.pedestrians:
             pedestrian.update_step(self)
+            
+
 
     @staticmethod
     def cell_to_color(_id):
         return Scenario.NAME2COLOR[Scenario.ID2NAME[_id]]
 
-    def target_grid_to_image(self, canvas, old_image_id):
+    def target_grid_to_image(self, mode,canvas, old_image_id):
         """
         Creates a colored image based on the distance to the target stored in
         self.target_distance_gids.
@@ -143,12 +155,25 @@ class Scenario:
         """
         im = Image.new(mode="RGB", size=(self.width, self.height))
         pix = im.load()
+        self.target_distance_grids()
         for x in range(self.width):
             for y in range(self.height):
-                target_distance = self.target_distance_grids[x][y]
-                pix[x, y] = (max(0, min(255, int(10 * target_distance) - 0 * 255)),
-                             max(0, min(255, int(10 * target_distance) - 1 * 255)),
-                             max(0, min(255, int(10 * target_distance) - 2 * 255)))
+
+                if mode == 'cost':
+                    grid = self.cost[x][y]
+                elif mode == 'dist':
+                    grid = self.target_distance_grids[x][y]
+                else:
+                    raise ValueError("Mode must either be 'cost' or 'dist'")
+                if self._is_obstacle(x, y):
+                    pix[x, y] = (255, 255, 255)
+                    continue
+                if grid == np.inf:
+                    pix[x, y] = (155, 155, 155)
+                    continue
+                pix[x, y] = (max(0, min(255, int(10 * grid) - 0 * 255)),
+                             max(0, min(255, int(10 * grid) - 1 * 255)),
+                             max(0, min(255, int(10 * grid) - 2 * 255)))
         im = im.resize(Scenario.GRID_SIZE, Image.NONE)
         self.grid_image = ImageTk.PhotoImage(im)
         canvas.itemconfigure(old_image_id, image=self.grid_image)
@@ -167,6 +192,9 @@ class Scenario:
                 pix[x, y] = self.cell_to_color(self.grid[x, y])
         for pedestrian in self.pedestrians:
             x, y = pedestrian.position
+            for [x,y] in pedestrian.track:
+                if not self.grid[x, y] == Scenario.NAME2ID['TARGET']:
+                    pix[x, y] = Scenario.NAME2COLOR['TRACK']
             pix[x, y] = Scenario.NAME2COLOR['PEDESTRIAN']
         im = im.resize(Scenario.GRID_SIZE, Image.NONE)
         self.grid_image = ImageTk.PhotoImage(im)
