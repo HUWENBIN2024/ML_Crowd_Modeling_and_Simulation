@@ -9,6 +9,8 @@ def parse_args():
                     help="json file path.") 
     cms_config.add_argument("--iter", default=100, type=int, required=False,
                     help="set the number of iteration steps.") 
+    cms_config.add_argument("--distance_mode", required=False, default='dijkstra',
+                    help="config the distance mode. (the default one dijkstra )") 
     args = parser.parse_args()
     return args
 
