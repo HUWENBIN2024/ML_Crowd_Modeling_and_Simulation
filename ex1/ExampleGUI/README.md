@@ -13,13 +13,13 @@ pip install -r requirements.txt
 ## Simulation
 
 ```
-python main.py --json_path <path of a json file>
+python main.py --json_path <path of a json file> --iter <# of steps> --distance_mode <dijkstra or euclidean>
 ```
 
 example:
 
 ```
-python main.py --json_path ../scenarios/sc0.json --iter 100
+python main.py --json_path ../scenarios/sc0.json --iter 100 --distance_mode dijkstra
 ```
 
 # Json
