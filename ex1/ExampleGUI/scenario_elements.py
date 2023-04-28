@@ -51,10 +51,15 @@ class Pedestrian:
         scenario.individual_repulse_force(cost, self._position[0], self._position[1], sign=-1)
         next_cell_distance = cost[self._position[0]][self._position[1]]
         next_pos = self._position
+        x, y = self._position
         for (n_x, n_y) in neighbors:
-            if next_cell_distance > cost[n_x, n_y]:
+            if next_cell_distance > cost[n_x, n_y] and abs(next_cell_distance - cost[n_x, n_y]) > 1e-10:
                 next_pos = (n_x, n_y)
                 next_cell_distance = cost[n_x, n_y]
+            elif abs(next_cell_distance - cost[n_x, n_y]) < 1e-10 and (n_x - x)**2 + (n_y - y)**2 == 1:
+                next_pos = (n_x, n_y)
+                next_cell_distance = cost[n_x, n_y]
+                
         self._position = next_pos
         for tar in scenario.target_list:
             if (self._position[0], self._position[1]) == (tar[0], tar[1]):
