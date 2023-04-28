@@ -14,12 +14,20 @@ class Pedestrian:
     def __init__(self, position, desired_speed):
         self._position = position
         self._desired_speed = desired_speed
+
         self.status = 'walking' # walking or finished
         self._before_schedule = 0
+
+        self._track = []
+
 
     @property
     def position(self):
         return self._position
+    
+    @property
+    def track(self):
+        return self._track
 
     @property
     def desired_speed(self):
@@ -37,8 +45,8 @@ class Pedestrian:
             for y in [-1, 0, 1]
             if 0 <= x + self._position[0] < scenario.width 
             and 0 <= y + self._position[1] < scenario.height 
-            and np.abs(x) + np.abs(y) > 0
             and (x , y) != (0, 0)
+
         ]
 
     def update_step(self, scenario):
@@ -62,6 +70,7 @@ class Pedestrian:
             elif abs(next_cell_distance - cost[n_x, n_y]) < 1e-10 and (n_x - x)**2 + (n_y - y)**2 == 1:
                 next_pos = (n_x, n_y)
                 next_cell_distance = cost[n_x, n_y]
+                self._track.append(self._position)
 
         euclidean_step_length = math.sqrt(math.pow(self.position[0] - next_pos[0], 2) + math.pow(self.position[1] - next_pos[1], 2))
 
@@ -76,7 +85,10 @@ class Pedestrian:
 
         for tar in scenario.target_list:
             if (self._position[0], self._position[1]) == (tar[0], tar[1]):
-                self.status = 'finished'
+                self.status = 'finished'                
+
+        self._position = next_pos
+
 
 
 class Scenario:
@@ -94,7 +106,9 @@ class Scenario:
         'EMPTY': (255, 255, 255),
         'PEDESTRIAN': (255, 0, 0), # red
         'TARGET': (0, 0, 255),     # violet
-        'OBSTACLE': (0, 255, 0)  # yellow
+        'OBSTACLE': (0, 255, 0) , # yellow
+        'TRACK':(128,125,125) ,    #grey
+      
     }
     NAME2ID = {
         ID2NAME[0]: 0,
@@ -303,7 +317,7 @@ class Scenario:
     def cell_to_color(_id):
         return Scenario.NAME2COLOR[Scenario.ID2NAME[_id]]
 
-    def target_grid_to_image(self, canvas, old_image_id):
+    def target_grid_to_image(self,canvas, old_image_id):
         """
         Creates a colored image based on the distance to the target stored in
         self.target_distance_gids.
@@ -312,12 +326,14 @@ class Scenario:
         """
         im = Image.new(mode="RGB", size=(self.width, self.height))
         pix = im.load()
+        
         for x in range(self.width):
             for y in range(self.height):
                 target_distance = self.target_distance_grids[x][y]
-                pix[x, y] = (max(0, min(255, int(10 * target_distance) - 0 * 255)),
-                             max(0, min(255, int(10 * target_distance) - 1 * 255)),
-                             max(0, min(255, int(10 * target_distance) - 2 * 255)))
+                pix[x, y] = (max(93, min(255, int(10 * target_distance) - 0 * 139)),
+                             max(71, min(255, int(10 * target_distance) - 1 * 139)),
+                             max(130, min(255, int(10 * target_distance) - 2 * 139)))
+        
         im = im.resize(Scenario.GRID_SIZE, Image.NONE)
         self.grid_image = ImageTk.PhotoImage(im)
         canvas.itemconfigure(old_image_id, image=self.grid_image)
@@ -336,6 +352,9 @@ class Scenario:
                 pix[x, y] = self.cell_to_color(self.grid[x, y])
         for pedestrian in self.pedestrians:
             x, y = pedestrian.position
+            for [x,y] in pedestrian.track:
+                if not self.grid[x, y] == Scenario.NAME2ID['TARGET']:
+                    pix[x, y] = Scenario.NAME2COLOR['TRACK']
             pix[x, y] = Scenario.NAME2COLOR['PEDESTRIAN']
         im = im.resize(Scenario.GRID_SIZE, Image.NONE)
         self.grid_image = ImageTk.PhotoImage(im)

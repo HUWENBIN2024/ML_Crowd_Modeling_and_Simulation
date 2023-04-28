@@ -57,6 +57,18 @@ class MainGUI():
         self.sc.update_step()
         self.sc.to_image(canvas, canvas_image)
 
+
+    def visual_cost(self, canvas, canvas_image):
+        """
+        visualize the simulation cost function.
+
+        Args:
+            scenario (scenario_elements.Scenario): Add _description_
+            canvas (tkinter.Canvas): Add _description_
+            canvas_image (missing _type_): Add _description_
+        """
+        self.sc.target_grid_to_image( canvas, canvas_image)
+
     def load_scenario(self, canvas, canvas_image, args):
         '''
         load a specific scenario described by a json file.
@@ -88,6 +100,7 @@ class MainGUI():
         self.sc.to_image(canvas, canvas_image)
 
         return sc
+    
 
     def exit_gui(self, ):
         """
@@ -104,7 +117,7 @@ class MainGUI():
         """
         # create an environment
         win = tkinter.Tk()
-        win.geometry('500x500')  # setting the size of the window
+        win.geometry('800x800')  # setting the size of the window
         win.title('Cellular Automata GUI')
 
         # add a menu
@@ -131,5 +144,7 @@ class MainGUI():
         btn.place(x=200, y=10)
         btn = Button(win, text='Create simulation', command=lambda: self.create_scenario(canvas, canvas_image, win))
         btn.place(x=380, y=10)
+        btn = Button(win, text='Cost Visualization', command=lambda: self.visual_cost(canvas, canvas_image))
+        btn.place(x=550, y=10)
 
         win.mainloop()
