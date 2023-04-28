@@ -236,9 +236,15 @@ class Scenario:
         return distances.reshape((self.width, self.height))
 
     def is_inbound(self, i, j):
+        '''
+        Whether (i, j) is our scenario boundary.
+        '''
         return -1 < i and i < self.width and -1 < j and j < self.height
 
     def calculate_cost(self, ):
+        '''
+        Calculate the forse among individuals
+        '''
         ped_cost = np.zeros((self.width, self.height))
         for ped in self.pedestrians:
             x, y = ped._position
@@ -246,6 +252,16 @@ class Scenario:
         self.cost = ped_cost + self.target_distance_grids
 
     def individual_repulse_force(self, cost_matrix, x, y, sign=1):
+        '''
+        Influnce brought by one individual.
+        The implementation idea comes from Newton's Third Law.
+
+        Args: 
+            cost_matrix: a numpy matrix that save cost values for each grid.
+            x: x coordinate.
+            y: y coordinate.
+            sign: positive or negative.
+        '''
         r_max = self.r_max
         for i in range(-r_max, r_max+1):
             for j in range(-r_max, r_max+1):
