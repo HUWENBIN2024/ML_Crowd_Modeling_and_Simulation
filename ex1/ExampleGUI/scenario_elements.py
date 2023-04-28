@@ -12,6 +12,7 @@ class Pedestrian:
     def __init__(self, position, desired_speed):
         self._position = position
         self._desired_speed = desired_speed
+        self.status = 'walking' # walking or finished
 
     @property
     def position(self):
@@ -53,6 +54,9 @@ class Pedestrian:
                 next_pos = (n_x, n_y)
                 next_cell_distance = scenario.target_distance_grids[n_x, n_y]
         self._position = next_pos
+        for tar in scenario.target_list:
+            if (self._position[0], self._position[1]) == (tar[0], tar[1]):
+                self.status = 'finished'
 
 
 class Scenario:
@@ -235,7 +239,10 @@ class Scenario:
         Pedestrians can occupy the same cell.
         """
         for pedestrian in self.pedestrians:
-            pedestrian.update_step(self)
+            if pedestrian.status == 'finished':
+                self.pedestrians.remove(pedestrian)
+            else:
+                pedestrian.update_step(self)
 
     @staticmethod
     def cell_to_color(_id):
