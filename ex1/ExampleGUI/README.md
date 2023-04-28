@@ -13,13 +13,13 @@ pip install -r requirements.txt
 ## Simulation
 
 ```
-python main.py --json_path <path of a json file> --iter <# of steps> --distance_mode <dijkstra or euclidean>
+python main.py --json_path <path of a json file> --iter <# of steps> --distance_mode <dijkstra or euclidean> --r_max <r max param>
 ```
 
 example:
 
 ```
-python main.py --json_path ../scenarios/sc0.json --iter 100 --distance_mode dijkstra
+python main.py --json_path ../scenarios/sc0.json --iter 100 --distance_mode dijkstra --r_max 2
 ```
 
 # Json
@@ -43,6 +43,6 @@ Coordinates are form of (x, y).
                     [20, 10],
                     [21, 10]
                  ]
-              
+            
 }
 ```
