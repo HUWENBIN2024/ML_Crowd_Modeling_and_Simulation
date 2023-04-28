@@ -1,3 +1,5 @@
+import math
+
 import scipy.spatial.distance
 from PIL import Image, ImageTk
 import numpy as np
@@ -13,6 +15,7 @@ class Pedestrian:
         self._position = position
         self._desired_speed = desired_speed
         self.status = 'walking' # walking or finished
+        self._before_schedule = 0
 
     @property
     def position(self):
@@ -59,8 +62,18 @@ class Pedestrian:
             elif abs(next_cell_distance - cost[n_x, n_y]) < 1e-10 and (n_x - x)**2 + (n_y - y)**2 == 1:
                 next_pos = (n_x, n_y)
                 next_cell_distance = cost[n_x, n_y]
-                
-        self._position = next_pos
+
+        euclidean_step_length = math.sqrt(math.pow(self.position[0] - next_pos[0], 2) + math.pow(self.position[1] - next_pos[1], 2))
+
+
+        # only walk to next field if pedestrian is not already more than half a field before schedule
+        if self._before_schedule + euclidean_step_length - self.desired_speed > 0.5:
+            self._before_schedule -= 1
+        else:
+            # every move calculate how much deviation there is from the desired speed and add to accumulated speed deviation
+            self._before_schedule += euclidean_step_length - self.desired_speed
+            self._position = next_pos
+
         for tar in scenario.target_list:
             if (self._position[0], self._position[1]) == (tar[0], tar[1]):
                 self.status = 'finished'
@@ -177,7 +190,7 @@ class Scenario:
         G = G.to_undirected()
 
         # add nodes
-        for id in range(self.width* self.height):
+        for id in range(self.width * self.height):
             G.add_node(id)
         nb_list = self.get_neighbors(25, 25) # a list of neighbour coordinates
 
