@@ -13,13 +13,13 @@ pip install -r requirements.txt
 ## Simulation
 
 ```
-python main.py --json_path <path of a json file> --iter <# of steps> --distance_mode <dijkstra or euclidean>
+python main.py --json_path <path of a json file> --iter <# of steps> --distance_mode <dijkstra or euclidean> --r_max <r max param>
 ```
 
 example:
 
 ```
-python main.py --json_path ../scenarios/sc0.json --iter 100 --distance_mode dijkstra
+python main.py --json_path ../scenarios/sc0.json --iter 100 --distance_mode dijkstra --r_max 2
 ```
 
 # Json
@@ -43,6 +43,18 @@ Coordinates are form of (x, y).
                     [20, 10],
                     [21, 10]
                  ]
-              
+            
 }
 ```
+## Key idea
+1. How to avoid obstacles?
+    
+    Build a undirected graph whose vertises represent grids, and those obstacles are removed from the graph. Use multi-target Dikjstra algorithm to calculate shortest paths for all vertises respectively. And use the result as cost function or pedestrian patential field. This figure shows details:
+    
+    ![](../imgs/graph1.png)
+    Figure credit: [Sanchez-Lengeling, et al., "A Gentle Introduction to Graph Neural Networks", Distill, 2021.](https://distill.pub/2021/gnn-intro/)
+
+2. How to simulate individuals repulsive force?
+
+    It seems trivial to for implementation the function: $ c(r) = e^{\frac{1}{r^2-r_{max}^2}} $. However, it would be extremely costly if we traverse all the other pedestrians for each pedestrian update step. Instead, according Newton's Third Law -- forces act mutually, we conduct a preprocess to compute repulsive force within a restricted area: $ \{(x,y) | (x-x_p)^2 + (y-y_p)^2 < r_{max}^2; x,y,x_p,y_p\in R\} $, where $(x_p, y_p)$ is the coordinate of a specific pedestrian. For discrete space implementation details, please look into our code.
+    
