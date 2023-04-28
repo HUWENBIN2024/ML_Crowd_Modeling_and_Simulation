@@ -111,6 +111,9 @@ class Scenario:
         ]
 
     def recompute_target_distances(self):
+        '''
+        Choose which distance mode.
+        '''
         if self.distance_mode == 'dijkstra':
             self.target_distance_grids = self.walking_distance()
         else:
@@ -118,6 +121,9 @@ class Scenario:
         return self.target_distance_grids
     
     def get_targets(self, ):
+        '''
+        Get targets from self.grid .
+        '''
         targets = []
         for x in range(self.width):
             for y in range(self.height):
@@ -126,6 +132,9 @@ class Scenario:
         return targets
 
     def walking_distance(self, ):
+        """
+        Computes the shortest manhattan distance from every grid point to targets using Dijkstra algorithm.
+        """
         targets = self.get_targets()
         if len(targets) == 0:
             return np.zeros((self.width, self.height))
@@ -148,6 +157,8 @@ class Scenario:
 
         Args: 
             grid: a 2d numpy array that save status in each grid. (normally, it's the same of self.grid)
+        Return:
+            An undirectional graph whose vertises represent grids without obstacles.
         '''
         obstacle_list = []
         G = nx.Graph()
@@ -174,8 +185,6 @@ class Scenario:
         G.remove_nodes_from(obstacle_list)
         return G
     
-   
-
     def id2cod(self, id):
         '''
         Convert id to coordinate. 
