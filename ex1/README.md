@@ -51,7 +51,7 @@ Coordinates are form of (x, y).
     
     Build a undirected graph whose vertises represent grids, and those obstacles are removed from the graph. Use multi-target Dikjstra algorithm to calculate shortest paths for all vertises respectively. And use the result as cost function or pedestrian patential field. This figure shows details:
     
-    ![](../imgs/graph1.png)
+    ![](imgs/graph1.png)
     Figure credit: [Sanchez-Lengeling, et al., "A Gentle Introduction to Graph Neural Networks", Distill, 2021.](https://distill.pub/2021/gnn-intro/)
 
 2. How to simulate individuals repulsive force?
