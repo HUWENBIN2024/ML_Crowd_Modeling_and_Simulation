@@ -2,7 +2,7 @@ import scipy.spatial.distance
 from PIL import Image, ImageTk
 import numpy as np
 import networkx as nx
-
+import copy
 
 class Pedestrian:
     """
@@ -47,12 +47,14 @@ class Pedestrian:
         :param scenario: The current scenario instance.
         """
         neighbors = self.get_neighbors(scenario)
-        next_cell_distance = scenario.target_distance_grids[self._position[0]][self._position[1]]
+        cost = copy.deepcopy(scenario.cost)
+        scenario.individual_repulse_force(cost, self._position[0], self._position[1], sign=-1)
+        next_cell_distance = cost[self._position[0]][self._position[1]]
         next_pos = self._position
         for (n_x, n_y) in neighbors:
-            if next_cell_distance > scenario.target_distance_grids[n_x, n_y]:
+            if next_cell_distance > cost[n_x, n_y]:
                 next_pos = (n_x, n_y)
-                next_cell_distance = scenario.target_distance_grids[n_x, n_y]
+                next_cell_distance = cost[n_x, n_y]
         self._position = next_pos
         for tar in scenario.target_list:
             if (self._position[0], self._position[1]) == (tar[0], tar[1]):
@@ -88,7 +90,7 @@ class Scenario:
             raise ValueError(f"Width {width} must be in [1, 1024].")
         if height < 1 or height > 1024:
             raise ValueError(f"Height {height} must be in [1, 1024].")
-
+        self.r_max = args.r_max
         self.width = width
         self.height = height
         self.grid_image = None
@@ -96,6 +98,7 @@ class Scenario:
         self.pedestrians = []
         self.target_list = []
         self.distance_mode = args.distance_mode
+        self.cost = np.zeros((width, height))
 
         self.target_distance_grids = self.recompute_target_distances()
       
@@ -232,12 +235,30 @@ class Scenario:
 
         return distances.reshape((self.width, self.height))
 
+    def is_inbound(self, i, j):
+        return -1 < i and i < self.width and -1 < j and j < self.height
+
+    def calculate_cost(self, ):
+        ped_cost = np.zeros((self.width, self.height))
+        for ped in self.pedestrians:
+            x, y = ped._position
+            self.individual_repulse_force(ped_cost, x, y)
+        self.cost = ped_cost + self.target_distance_grids
+
+    def individual_repulse_force(self, cost_matrix, x, y, sign=1):
+        r_max = self.r_max
+        for i in range(-r_max, r_max+1):
+            for j in range(-r_max, r_max+1):
+                if i**2 + j**2 < r_max**2 and self.is_inbound(x+i, y+j):
+                    cost_matrix[x+i, y+j] += sign * np.exp(1 / (i**2 + j**2 - r_max**2))
+
     def update_step(self):
         """
         Updates the position of all pedestrians.
         This does not take obstacles or other pedestrians into account.
         Pedestrians can occupy the same cell.
         """
+        self.calculate_cost()
         for pedestrian in self.pedestrians:
             if pedestrian.status == 'finished':
                 self.pedestrians.remove(pedestrian)
