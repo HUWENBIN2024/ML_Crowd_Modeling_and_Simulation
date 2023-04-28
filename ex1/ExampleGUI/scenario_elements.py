@@ -76,7 +76,8 @@ class Scenario:
         'PEDESTRIAN': (255, 0, 0), # red
         'TARGET': (0, 0, 255),     # violet
         'OBSTACLE': (0, 255, 0) , # yellow
-        'TRACK':(128,125,125) #grey
+        'TRACK':(128,125,125) ,    #grey
+      
     }
     NAME2ID = {
         ID2NAME[0]: 0,
@@ -146,7 +147,7 @@ class Scenario:
     def cell_to_color(_id):
         return Scenario.NAME2COLOR[Scenario.ID2NAME[_id]]
 
-    def target_grid_to_image(self, mode,canvas, old_image_id):
+    def target_grid_to_image(self,canvas, old_image_id):
         """
         Creates a colored image based on the distance to the target stored in
         self.target_distance_gids.
@@ -155,25 +156,14 @@ class Scenario:
         """
         im = Image.new(mode="RGB", size=(self.width, self.height))
         pix = im.load()
-        self.target_distance_grids()
+        
         for x in range(self.width):
             for y in range(self.height):
-
-                if mode == 'cost':
-                    grid = self.cost[x][y]
-                elif mode == 'dist':
-                    grid = self.target_distance_grids[x][y]
-                else:
-                    raise ValueError("Mode must either be 'cost' or 'dist'")
-                if self._is_obstacle(x, y):
-                    pix[x, y] = (255, 255, 255)
-                    continue
-                if grid == np.inf:
-                    pix[x, y] = (155, 155, 155)
-                    continue
-                pix[x, y] = (max(0, min(255, int(10 * grid) - 0 * 255)),
-                             max(0, min(255, int(10 * grid) - 1 * 255)),
-                             max(0, min(255, int(10 * grid) - 2 * 255)))
+                target_distance = self.target_distance_grids[x][y]
+                pix[x, y] = (max(93, min(255, int(10 * target_distance) - 0 * 139)),
+                             max(71, min(255, int(10 * target_distance) - 1 * 139)),
+                             max(130, min(255, int(10 * target_distance) - 2 * 139)))
+        
         im = im.resize(Scenario.GRID_SIZE, Image.NONE)
         self.grid_image = ImageTk.PhotoImage(im)
         canvas.itemconfigure(old_image_id, image=self.grid_image)
