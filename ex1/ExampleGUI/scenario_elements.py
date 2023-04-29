@@ -19,9 +19,6 @@ class Pedestrian:
         self._before_schedule = 0
 
         self._track = []
-        self.step_length = desired_speed * 1
-        self.move_dist = 0
-        self.accumulate_steps = 1
 
 
     @property
@@ -100,8 +97,7 @@ class Pedestrian:
             self.accumulate_steps += 1
 
 
-                   
-        
+
 
 class Scenario:
     """
