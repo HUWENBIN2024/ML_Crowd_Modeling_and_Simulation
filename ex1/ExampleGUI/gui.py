@@ -5,6 +5,7 @@ from scenario_elements import Scenario, Pedestrian
 import time
 import json
 import numpy as np
+import time
 
 def load_json(path):
     '''
@@ -33,7 +34,7 @@ class MainGUI():
         for i in range(self.args.iter):
             self.step_scenario(canvas, canvas_image)
             win.update()
-            time.sleep(0.05)
+            time.sleep(0.3)
 
     def restart_scenario(self, canvas, canvas_image):
         '''
@@ -56,6 +57,7 @@ class MainGUI():
         """
         self.sc.update_step()
         self.sc.to_image(canvas, canvas_image)
+        
 
 
     def visual_cost(self, canvas, canvas_image):

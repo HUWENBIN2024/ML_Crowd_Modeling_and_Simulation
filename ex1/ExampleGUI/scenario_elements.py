@@ -5,6 +5,7 @@ from PIL import Image, ImageTk
 import numpy as np
 import networkx as nx
 import copy
+import time
 
 class Pedestrian:
     """
@@ -129,9 +130,9 @@ class Scenario:
     }
 
     def __init__(self, width, height, args):
-        if width < 1 or width > 1024:
+        if width < 1 or width > 102400:
             raise ValueError(f"Width {width} must be in [1, 1024].")
-        if height < 1 or height > 1024:
+        if height < 1 or height > 102400:
             raise ValueError(f"Height {height} must be in [1, 1024].")
         self.r_max = args.r_max
         self.width = width
@@ -317,12 +318,16 @@ class Scenario:
         This does not take obstacles or other pedestrians into account.
         Pedestrians can occupy the same cell.
         """
+        
         self.calculate_cost()
         for pedestrian in self.pedestrians:
             if pedestrian.status == 'finished':
                 self.pedestrians.remove(pedestrian)
             else:
                 pedestrian.update_step(self)
+        
+
+        
 
     @staticmethod
     def cell_to_color(_id):
