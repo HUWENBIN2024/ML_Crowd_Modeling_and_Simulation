@@ -91,6 +91,8 @@ class Pedestrian:
                         self.status = 'finished'     
                         return
                 next_pos = self.get_next_position(scenario)
+                if (self.position[0] - next_pos[0]) ** 2  == (self.position[1] - next_pos[1]):
+                    break
                 self.move_dist += ((self.position[0] - next_pos[0]) ** 2 + (self.position[1] - next_pos[1]) ** 2 ) ** (1/2)
             self.move_dist = 0 
             self.accumulate_steps = 1
