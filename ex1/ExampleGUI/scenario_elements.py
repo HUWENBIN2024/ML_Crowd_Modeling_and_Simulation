@@ -87,7 +87,6 @@ class Pedestrian:
             if (self._position[0], self._position[1]) == (tar[0], tar[1]):
                 self.status = 'finished'                
 
-        self._position = next_pos
 
 
 
