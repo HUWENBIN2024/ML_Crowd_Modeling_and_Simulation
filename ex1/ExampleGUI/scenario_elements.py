@@ -87,7 +87,6 @@ class Pedestrian:
             if (self._position[0], self._position[1]) == (tar[0], tar[1]):
                 self.status = 'finished'                
 
-        self._position = next_pos
 
 
 
@@ -330,6 +329,8 @@ class Scenario:
         for x in range(self.width):
             for y in range(self.height):
                 target_distance = self.target_distance_grids[x][y]
+                if target_distance > 1e10:
+                    target_distance = 1e5
                 pix[x, y] = (max(93, min(255, int(10 * target_distance) - 0 * 139)),
                              max(71, min(255, int(10 * target_distance) - 1 * 139)),
                              max(130, min(255, int(10 * target_distance) - 2 * 139)))
