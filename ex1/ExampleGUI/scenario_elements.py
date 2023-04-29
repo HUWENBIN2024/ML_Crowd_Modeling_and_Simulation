@@ -29,7 +29,7 @@ class Pedestrian:
         return self._position
     
     @property
-    def track(self):
+    def track(self):     #visualize track of pedestrains
         return self._track
 
     @property
@@ -52,29 +52,33 @@ class Pedestrian:
 
         ]
     
+
     def get_next_position(self, scenario):
+
         neighbors = self.get_neighbors(scenario)
         cost = copy.deepcopy(scenario.cost)
         scenario.individual_repulse_force(cost, self._position[0], self._position[1], sign=-1)
         next_cell_distance = cost[self._position[0]][self._position[1]]
         next_pos = self._position
         x, y = self._position
+        self._track.append(self._position)
         for (n_x, n_y) in neighbors:
             if next_cell_distance > cost[n_x, n_y] and abs(next_cell_distance - cost[n_x, n_y]) > 1e-10:
                 next_pos = (n_x, n_y)
                 next_cell_distance = cost[n_x, n_y]
             elif abs(next_cell_distance - cost[n_x, n_y]) < 1e-10 and (n_x - x)**2 + (n_y - y)**2 == 1:
                 next_pos = (n_x, n_y)
-                next_cell_distance = cost[n_x, n_y]
-                # self._track.append(self._position)
+                next_cell_distance = cost[n_x, n_y]             
+
         return next_pos
+
 
     def update_step(self, scenario):
         """
         Moves to the cell with the lowest distance to the target.
         This does not take obstacles or other pedestrians into account.
         Pedestrians can occupy the same cell.
-
+        
         :param scenario: The current scenario instance.
         """
         next_pos = self.get_next_position(scenario)
@@ -92,6 +96,7 @@ class Pedestrian:
             self.accumulate_steps = 1
         else:
             self.accumulate_steps += 1
+
 
                    
         
@@ -362,6 +367,8 @@ class Scenario:
             for [x,y] in pedestrian.track:
                 if not self.grid[x, y] == Scenario.NAME2ID['TARGET']:
                     pix[x, y] = Scenario.NAME2COLOR['TRACK']
+        for pedestrian in self.pedestrians:
+            x, y = pedestrian.position
             pix[x, y] = Scenario.NAME2COLOR['PEDESTRIAN']
         im = im.resize(Scenario.GRID_SIZE, Image.NONE)
         self.grid_image = ImageTk.PhotoImage(im)
