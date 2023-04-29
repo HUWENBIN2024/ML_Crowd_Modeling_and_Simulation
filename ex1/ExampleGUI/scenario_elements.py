@@ -19,6 +19,9 @@ class Pedestrian:
         self._before_schedule = 0
 
         self._track = []
+        self.step_length = desired_speed * 1
+        self.move_dist = 0
+        self.accumulate_steps = 1
 
 
     @property
@@ -48,15 +51,8 @@ class Pedestrian:
             and (x , y) != (0, 0)
 
         ]
-
-    def update_step(self, scenario):
-        """
-        Moves to the cell with the lowest distance to the target.
-        This does not take obstacles or other pedestrians into account.
-        Pedestrians can occupy the same cell.
-
-        :param scenario: The current scenario instance.
-        """
+    
+    def get_next_position(self, scenario):
         neighbors = self.get_neighbors(scenario)
         cost = copy.deepcopy(scenario.cost)
         scenario.individual_repulse_force(cost, self._position[0], self._position[1], sign=-1)
@@ -70,25 +66,35 @@ class Pedestrian:
             elif abs(next_cell_distance - cost[n_x, n_y]) < 1e-10 and (n_x - x)**2 + (n_y - y)**2 == 1:
                 next_pos = (n_x, n_y)
                 next_cell_distance = cost[n_x, n_y]
-                self._track.append(self._position)
+                # self._track.append(self._position)
+        return next_pos
 
-        euclidean_step_length = math.sqrt(math.pow(self.position[0] - next_pos[0], 2) + math.pow(self.position[1] - next_pos[1], 2))
+    def update_step(self, scenario):
+        """
+        Moves to the cell with the lowest distance to the target.
+        This does not take obstacles or other pedestrians into account.
+        Pedestrians can occupy the same cell.
 
-
-        # only walk to next field if pedestrian is not already more than half a field before schedule
-        if self._before_schedule + euclidean_step_length - self.desired_speed > 0.5:
-            self._before_schedule -= 1
+        :param scenario: The current scenario instance.
+        """
+        next_pos = self.get_next_position(scenario)
+        self.move_dist = ((self.position[0] - next_pos[0]) ** 2 + (self.position[1] - next_pos[1]) ** 2) ** (1/2)
+        if self.move_dist <= self.step_length * self.accumulate_steps:
+            while self.move_dist <= self.step_length * self.accumulate_steps:
+                self._position = next_pos
+                for tar in scenario.target_list:
+                    if (self._position[0], self._position[1]) == (tar[0], tar[1]):
+                        self.status = 'finished'     
+                        return
+                next_pos = self.get_next_position(scenario)
+                self.move_dist += ((self.position[0] - next_pos[0]) ** 2 + (self.position[1] - next_pos[1]) ** 2 ) ** (1/2)
+            self.move_dist = 0 
+            self.accumulate_steps = 1
         else:
-            # every move calculate how much deviation there is from the desired speed and add to accumulated speed deviation
-            self._before_schedule += euclidean_step_length - self.desired_speed
-            self._position = next_pos
+            self.accumulate_steps += 1
 
-        for tar in scenario.target_list:
-            if (self._position[0], self._position[1]) == (tar[0], tar[1]):
-                self.status = 'finished'                
-
-
-
+                   
+        
 
 class Scenario:
     """
