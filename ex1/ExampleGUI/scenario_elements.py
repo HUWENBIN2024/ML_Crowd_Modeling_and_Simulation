@@ -26,7 +26,7 @@ class Pedestrian:
         return self._position
     
     @property
-    def track(self):
+    def track(self):     #visualize track of pedestrains
         return self._track
 
     @property
@@ -48,11 +48,13 @@ class Pedestrian:
             and (x , y) != (0, 0)
 
         ]
+    
+
 
     def update_step(self, scenario):
         """
         Moves to the cell with the lowest distance to the target.
-        This does not take obstacles or other pedestrians into account.
+        Take obstacles or other pedestrians into account.
         Pedestrians can occupy the same cell.
 
         :param scenario: The current scenario instance.
@@ -63,6 +65,7 @@ class Pedestrian:
         next_cell_distance = cost[self._position[0]][self._position[1]]
         next_pos = self._position
         x, y = self._position
+        self._track.append(self._position)
         for (n_x, n_y) in neighbors:
             if next_cell_distance > cost[n_x, n_y] and abs(next_cell_distance - cost[n_x, n_y]) > 1e-10:
                 next_pos = (n_x, n_y)
@@ -70,19 +73,22 @@ class Pedestrian:
             elif abs(next_cell_distance - cost[n_x, n_y]) < 1e-10 and (n_x - x)**2 + (n_y - y)**2 == 1:
                 next_pos = (n_x, n_y)
                 next_cell_distance = cost[n_x, n_y]
-                self._track.append(self._position)
+                
 
-        euclidean_step_length = math.sqrt(math.pow(self.position[0] - next_pos[0], 2) + math.pow(self.position[1] - next_pos[1], 2))
+        # euclidean_step_length = math.sqrt(math.pow(self.position[0] - next_pos[0], 2) + math.pow(self.position[1] - next_pos[1], 2))
 
 
-        # only walk to next field if pedestrian is not already more than half a field before schedule
-        if self._before_schedule + euclidean_step_length - self.desired_speed > 0.5:
-            self._before_schedule -= 1
-        else:
-            # every move calculate how much deviation there is from the desired speed and add to accumulated speed deviation
-            self._before_schedule += euclidean_step_length - self.desired_speed
-            self._position = next_pos
+        # # only walk to next field if pedestrian is not already more than half a field before schedule
+        # if self._before_schedule + euclidean_step_length - self.desired_speed > 0.5:
+        #     self._before_schedule -= 1
+        # else:
+        #     # every move calculate how much deviation there is from the desired speed and add to accumulated speed deviation
+        #     self._before_schedule += euclidean_step_length - self.desired_speed
+        #     self._position = next_pos
 
+         
+
+        self._position = next_pos 
         for tar in scenario.target_list:
             if (self._position[0], self._position[1]) == (tar[0], tar[1]):
                 self.status = 'finished'                
@@ -356,6 +362,8 @@ class Scenario:
             for [x,y] in pedestrian.track:
                 if not self.grid[x, y] == Scenario.NAME2ID['TARGET']:
                     pix[x, y] = Scenario.NAME2COLOR['TRACK']
+        for pedestrian in self.pedestrians:
+            x, y = pedestrian.position
             pix[x, y] = Scenario.NAME2COLOR['PEDESTRIAN']
         im = im.resize(Scenario.GRID_SIZE, Image.NONE)
         self.grid_image = ImageTk.PhotoImage(im)
