@@ -1,0 +1,13 @@
+{
+    "shape": [50, 50],
+    "targets": [
+                    [25, 25]
+                ],
+    "pedestrians": [
+                    [[5, 25]    , 2]
+
+                ],
+    "obstacles": [
+        
+                ]
+}
