@@ -276,8 +276,9 @@ class Scenario:
 
         # now, compute the minimum over all distances to all targets.
         distances = np.min(distances, axis=0)
-
-        return distances.reshape((self.width, self.height))
+        distances = distances.reshape((self.width, self.height))
+        distances[self.grid == self.NAME2ID['OBSTACLE']] = np.inf
+        return distances
 
     def is_inbound(self, i, j):
         '''
