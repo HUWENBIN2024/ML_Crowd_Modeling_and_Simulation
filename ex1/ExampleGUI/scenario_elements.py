@@ -119,7 +119,7 @@ class Scenario:
         'PEDESTRIAN': (255, 0, 0), # red
         'TARGET': (0, 0, 255),     # violet
         'OBSTACLE': (0, 255, 0) , # yellow
-        'TRACK':(128,125,125) ,    #grey
+        'TRACK':(128,125,125)   #grey
       
     }
     NAME2ID = {
