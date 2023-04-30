@@ -6,7 +6,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     cms_config = parser.add_argument_group("poison settings")
 
-    cms_config.add_argument("--json_path", required=False, default="../scenarios/task5_test2.json",
+    cms_config.add_argument("--json_path", required=False, default="../scenarios/task4_bottleneck.json",
                     help="json file path.") 
     cms_config.add_argument("--iter", default=300, type=int, required=False,
                     help="set the number of iteration steps.") 
