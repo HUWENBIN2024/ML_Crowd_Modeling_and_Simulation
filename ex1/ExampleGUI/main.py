@@ -20,5 +20,6 @@ def parse_args():
 
 
 if __name__ == '__main__':
-    gui = MainGUI()
+    args = parse_args()
+    gui = MainGUI(args)
     gui.start_gui()
