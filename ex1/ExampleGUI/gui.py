@@ -5,6 +5,7 @@ from scenario_elements import Scenario, Pedestrian
 import time
 import json
 import numpy as np
+import time
 
 def load_json(path):
     '''
@@ -33,7 +34,7 @@ class MainGUI():
         for i in range(self.args.iter):
             self.step_scenario(canvas, canvas_image)
             win.update()
-            time.sleep(0.05)
+            time.sleep(0.3)
 
     def restart_scenario(self, canvas, canvas_image):
         '''
@@ -43,7 +44,7 @@ class MainGUI():
             canvas (tkinter.Canvas): Add _description_
             canvas_image (missing _type_): Add _description_
         '''
-        self.load_scenario(canvas, canvas_image)
+        self.load_scenario(canvas, canvas_image, self.args)
 
     def step_scenario(self, canvas, canvas_image):
         """
@@ -56,8 +57,21 @@ class MainGUI():
         """
         self.sc.update_step()
         self.sc.to_image(canvas, canvas_image)
+        
 
-    def load_scenario(self, canvas, canvas_image):
+
+    def visual_cost(self, canvas, canvas_image):
+        """
+        visualize the simulation cost function.
+
+        Args:
+            scenario (scenario_elements.Scenario): Add _description_
+            canvas (tkinter.Canvas): Add _description_
+            canvas_image (missing _type_): Add _description_
+        """
+        self.sc.target_grid_to_image( canvas, canvas_image)
+
+    def load_scenario(self, canvas, canvas_image, args):
         '''
         load a specific scenario described by a json file.
 
@@ -67,16 +81,20 @@ class MainGUI():
             canvas_image (missing _type_): Add _description_.
         '''
         config_dist = load_json(self.args.json_path)
-        sc = Scenario(config_dist['shape'][0], config_dist['shape'][0])
+        sc = Scenario(config_dist['shape'][0], config_dist['shape'][0], args)
 
-        targets = np.array((config_dist['targets'])).T
+        
         try:
             obstacles = np.array((config_dist['obstacles'])).T
             sc.grid[obstacles[0], obstacles[1]] = sc.NAME2ID['OBSTACLE']
         except:
             pass
+
+        targets = np.array((config_dist['targets'])).T
         sc.grid[targets[0], targets[1]] = sc.NAME2ID['TARGET']
-        
+
+        sc.target_list = config_dist['targets']
+
         sc.recompute_target_distances()
         sc.pedestrians = [Pedestrian(p[0], p[1]) for p in config_dist['pedestrians']]
         self.sc = sc
@@ -84,6 +102,7 @@ class MainGUI():
         self.sc.to_image(canvas, canvas_image)
 
         return sc
+    
 
     def exit_gui(self, ):
         """
@@ -100,7 +119,7 @@ class MainGUI():
         """
         # create an environment
         win = tkinter.Tk()
-        win.geometry('500x500')  # setting the size of the window
+        win.geometry('800x800')  # setting the size of the window
         win.title('Cellular Automata GUI')
 
         # add a menu
@@ -119,7 +138,7 @@ class MainGUI():
         canvas.pack()
 
         # create a scenario configured by a json file
-        self.load_scenario(canvas, canvas_image)
+        self.load_scenario(canvas, canvas_image, self.args)
 
         btn = Button(win, text='Step simulation', command=lambda: self.step_scenario(canvas, canvas_image))
         btn.place(x=20, y=10)
@@ -127,5 +146,7 @@ class MainGUI():
         btn.place(x=200, y=10)
         btn = Button(win, text='Create simulation', command=lambda: self.create_scenario(canvas, canvas_image, win))
         btn.place(x=380, y=10)
+        btn = Button(win, text='Cost Visualization', command=lambda: self.visual_cost(canvas, canvas_image))
+        btn.place(x=550, y=10)
 
         win.mainloop()
