@@ -17,8 +17,7 @@ class Pedestrian:
         self._desired_speed = desired_speed
 
         self.status = 'walking' # walking or finished
-        self.desired_walked_distance = 0
-        self.walked_distance = 0
+        self._before_schedule = 0
 
         self._track = []
         self.step_length = desired_speed * 1
@@ -56,6 +55,7 @@ class Pedestrian:
     
 
     def get_next_position(self, scenario):
+
         neighbors = self.get_neighbors(scenario)
         cost = copy.deepcopy(scenario.cost)
         scenario.individual_repulse_force(cost, self._position[0], self._position[1], sign=-1)
@@ -84,21 +84,22 @@ class Pedestrian:
         """
         next_pos = self.get_next_position(scenario)
         self.move_dist = ((self.position[0] - next_pos[0]) ** 2 + (self.position[1] - next_pos[1]) ** 2) ** (1/2)
-        self.desired_walked_distance += self.desired_speed
+        if self.move_dist <= self.step_length * self.accumulate_steps:
+            while self.move_dist <= self.step_length * self.accumulate_steps:
+                self._position = next_pos
+                for tar in scenario.target_list:
+                    if (self._position[0], self._position[1]) == (tar[0], tar[1]):
+                        self.status = 'finished'     
+                        return
+                next_pos = self.get_next_position(scenario)
+                if (self.position[0] - next_pos[0]) ** 2  == (self.position[1] - next_pos[1]):
+                    break
+                self.move_dist += ((self.position[0] - next_pos[0]) ** 2 + (self.position[1] - next_pos[1]) ** 2 ) ** (1/2)
+            self.move_dist = 0 
+            self.accumulate_steps = 1
+        else:
+            self.accumulate_steps += 1
 
-        while self.walked_distance + self.move_dist <= self.desired_walked_distance + 0.5:
-            self._position = next_pos
-            self.walked_distance += self.move_dist
-            for tar in scenario.target_list:
-                if (self._position[0], self._position[1]) == (tar[0], tar[1]):
-                    self.status = 'finished'
-                    return
-            next_pos = self.get_next_position(scenario)
-            self.move_dist = ((self.position[0] - next_pos[0]) ** 2 + (self.position[1] - next_pos[1]) ** 2 ) ** (1/2)
-
-
-        self.move_dist = 0
-        self.accumulate_steps = 1
 
 
 
@@ -118,7 +119,7 @@ class Scenario:
         'PEDESTRIAN': (255, 0, 0), # red
         'TARGET': (0, 0, 255),     # violet
         'OBSTACLE': (0, 255, 0) , # yellow
-        'TRACK':(128,125,125) ,    #grey
+        'TRACK':(128,125,125)   #grey
       
     }
     NAME2ID = {
@@ -275,8 +276,9 @@ class Scenario:
 
         # now, compute the minimum over all distances to all targets.
         distances = np.min(distances, axis=0)
-
-        return distances.reshape((self.width, self.height))
+        distances = distances.reshape((self.width, self.height))
+        distances[self.grid == self.NAME2ID['OBSTACLE']] = np.inf
+        return distances
 
     def is_inbound(self, i, j):
         '''

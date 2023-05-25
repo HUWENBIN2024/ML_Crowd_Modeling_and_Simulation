@@ -119,7 +119,7 @@ class MainGUI():
         """
         # create an environment
         win = tkinter.Tk()
-        win.geometry('800x800')  # setting the size of the window
+        win.geometry('520x520')  # setting the size of the window
         win.title('Cellular Automata GUI')
 
         # add a menu
@@ -143,10 +143,10 @@ class MainGUI():
         btn = Button(win, text='Step simulation', command=lambda: self.step_scenario(canvas, canvas_image))
         btn.place(x=20, y=10)
         btn = Button(win, text='Restart simulation', command=lambda: self.restart_scenario(canvas, canvas_image))
-        btn.place(x=200, y=10)
+        btn.place(x=140, y=10)
         btn = Button(win, text='Create simulation', command=lambda: self.create_scenario(canvas, canvas_image, win))
-        btn.place(x=380, y=10)
+        btn.place(x=270, y=10)
         btn = Button(win, text='Cost Visualization', command=lambda: self.visual_cost(canvas, canvas_image))
-        btn.place(x=550, y=10)
+        btn.place(x=400, y=10)
 
         win.mainloop()

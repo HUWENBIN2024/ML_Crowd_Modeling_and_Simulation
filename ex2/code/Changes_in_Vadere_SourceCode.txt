@@ -1,0 +1,141 @@
+******************************************************************What changes in Vadere source code***************************8******************************
+
+***************************************************************************SIR Model:************************************************************
+location:  VadereSimulator/src/org/vadere/simulator/models/groups/sir
+Changes:
+***************************SIRGroupModel.java*********************
+
+1. import packages:
+line:20-21
+
+import org.vadere.util.geometry.LinkedCellsGrid;
+import org.vadere.util.geometry.shapes.VPoint;
+
+2. decouple the infection rate and timestep:
+line: 190-229
+
+public void update(final double simTimeInSec) {
+		DynamicElementContainer<Pedestrian> container = topography.getPedestrianDynamicElements();
+
+		LinkedCellsGrid<Pedestrian> grid = container.getCellsElements();
+		double infectionRadius = attributesSIRG.getInfectionMaxDistance();
+		double infectionRate = attributesSIRG.getInfectionRate();
+		double recoveryRate = attributesSIRG.getRecoveryRate();
+
+
+		if (container.getElements().size() > 0) {
+			for (Pedestrian p : container.getElements()) {
+				SIRGroup group = getGroup(p);
+				int groupID = group.getID();
+
+				if (groupID == SIRType.ID_INFECTED.ordinal()) {
+					if (random.nextDouble() < recoveryRate) {
+						elementRemoved(p);
+						assignToGroup(p, SIRType.ID_RECOVERED.ordinal());
+					}
+				} else if (groupID == SIRType.ID_SUSCEPTIBLE.ordinal()) {
+					VPoint position = p.getPosition();
+					List<Pedestrian> neighbors = grid.getObjects(position, infectionRadius);
+					int infectedNeighbors = 0;
+
+					for (Pedestrian n : neighbors) {
+						if (p != n && getGroup(n).getID() == SIRType.ID_INFECTED.ordinal()) {
+							infectedNeighbors++;
+						}
+					}
+
+					for (int i = 0; i < infectedNeighbors; i++) {
+						if (random.nextDouble() < infectionRate) {
+							elementRemoved(p);
+							assignToGroup(p, SIRType.ID_INFECTED.ordinal());
+							break;
+						}
+					}
+				}
+			}
+		}
+
+**********************SIRType.java*******************************
+
+replace the ID_REMOVED with ID_RECOVERED.
+
+public enum SIRType
+{
+    ID_INFECTED,
+    ID_SUSCEPTIBLE,
+    ID_RECOVERED
+}
+***************************************************************************AttributesSIRG************************************************************
+
+**********************AttributesSIRG.java*******************************
+Location:  VadereState/src/org/vadere/state/attribu/models
+
+Change:  add recoverRate attribute.
+
+private double recoveryRate = 0.01;                                     //line16
+public double getRecoveryRate() { return  recoveryRate; }  //line 28
+
+
+***************************************************************************SimulationModel************************************************************
+
+**********************SimulationModel.java*******************************
+Location:VadereGUI/src/org/vadere/gui/components/model
+
+Change: define colors for goups .
+line: 24-26
+                protected final Color infectiveColor = new Color(255, 0, 0);     // red    for INFECTIVE
+	protected final Color susceptibleColor = new Color(0, 0, 255);   // blue for SUSCEPTIBLE
+	protected final Color recoveredColor = new Color(255, 255, 0);     // yellow  for RECOVERED
+
+line:36-38
+ public SimulationModel(final T config) {
+		super(config);
+		this.config = config;
+		this.config.setAgentColoring(AgentColoring.GROUP);
+		this.colorMap = new ConcurrentHashMap<>();
+		this.colorMap.put(-1, config.getPedestrianDefaultColor());
+
+		// add colors
+		this.colorMap.put(0, infectiveColor);
+		this.colorMap.put(1, susceptibleColor);
+		this.colorMap.put(2, recoveredColor);
+		this.random = new Random();
+
+
+	}
+
+***************************************************************************Simulation****************************************************************
+
+**********************Simulation.java*******************************
+
+Location: VadereSimulator/src/org/vadere/simulator/control/simulation
+Changes: 
+1. import org.vadere.simulator.models.groups.sir.SIRGroupModel;
+2. Still for decoupling  the infeection rate and the time step possible.
+
+if it is a SIRGroupModel, updare  the infection only if a full second has passed from last update.
+
+line 476-497.
+private void updateLocomotionLayer(double simTimeInSec) {
+		for (Model m : models) {
+			List<SourceController> stillSpawningSource = this.sourceControllers.stream().filter(s -> !s.isSourceFinished(simTimeInSec)).collect(Collectors.toList());
+			int pedestriansInSimulation = this.simulationState.getTopography().getPedestrianDynamicElements().getElements().size();
+			int aerosolCloudsInSimulation = this.simulationState.getTopography().getAerosolClouds().size();
+			
+                                                if (!stillSpawningSource.isEmpty() || pedestriansInSimulation > 0 || aerosolCloudsInSimulation > 0) {
+				if (m instanceof SIRGroupModel) {
+					accumulatedTime += this.attributesSimulation.getSimTimeStepLength();
+					double fixedTime = 1.0;
+					while (accumulatedTime >= fixedTime) {
+						m.update(simTimeInSec);
+						accumulatedTime -= fixedTime;
+					}
+				} else {
+					m.update(simTimeInSec);
+				}
+				if (topography.isRecomputeCells()) {
+					topographyController.update(simTimeInSec);
+				}
+			}
+		}
+	}
