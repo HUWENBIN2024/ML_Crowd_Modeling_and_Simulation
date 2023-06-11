@@ -1,6 +1,14 @@
 
 def mu(b, I, mu0, mu1):
-    """Recovery rate.
+    """
+    Recovery rate.
+    input:
+    - I: number of infective person
+    - b: num of beds per 10000 people
+    - mu0: min of mu
+    - mu1: max of mu
+
+    output: mu: recovery rate
     
     """
     # recovery rate, depends on mu0, mu1, b
@@ -10,12 +18,33 @@ def mu(b, I, mu0, mu1):
 def R0(beta, d, nu, mu1):
     """
     Basic reproduction number.
+
+    input:
+    - beta: contact times
+    - mu1: max of mu
+    - d: death rate
+    - nu: disease-induced death rate
+
+    output: Reproduction number
     """
     return beta / (d + nu + mu1)
 
 def h(I, mu0, mu1, beta, A, d, nu, b):
     """
     Indicator function for bifurcations.
+
+    input:
+    - I: number of infective person
+    - beta: contact times
+    - b: num of beds per 10000 people
+    - mu0: min of mu
+    - mu1: max of mu
+    - A: birth rate
+    - d: death rate
+    - nu: disease-induced death rate
+
+    output: 
+    Res Indicator
     """
     c0 = b**2 * d * A
     c1 = b * ((mu0-mu1+2*d) * A + (beta-nu)*b*d)
@@ -49,8 +78,8 @@ def model(t, y, mu0, mu1, beta, A, d, nu, b):
     S,I,R = y[:]
     m = mu(b, I, mu0, mu1)
     
-    dSdt = -S # add the correct model here
-    dIdt = 0
-    dRdt = 0
+    dSdt = A - d * S - (beta * S * I) / (S + I + R)
+    dIdt = - (d + nu) * I - m * I + (beta * S * I) / (S + I + R)
+    dRdt = m * I - d * R
     
     return [dSdt, dIdt, dRdt]
