@@ -22,6 +22,13 @@ def solve_euler(f_ode, y0, time):
 def plot_phase_portrait_linear(A, X, Y):
     """
     Plots a linear vector field in a streamplot, defined with X and Y coordinates and the matrix A.
+
+    input:
+    - A: Transformation matrix.
+    - X, Y: X and Y coordinates.
+
+    output:
+    plotting of the result.
     """
     UV = A@np.row_stack([X.ravel(), Y.ravel()])
     U = UV[0,:].reshape(X.shape)
