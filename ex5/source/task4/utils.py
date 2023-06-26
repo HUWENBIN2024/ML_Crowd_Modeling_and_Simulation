@@ -96,7 +96,7 @@ def plot_delayed_ver(X: np.ndarray,  delta_t: np.ndarray, ax=None):
          ax.set_ylabel("$x+ \Delta t$")
          ax.set_title(f"$\Delta t ={delta_t}$")
 
-def plot_delayed_ver_lorenz(X: np.ndarray,  delta_t: np.ndarray,isZ=bool):
+def plot_delayed_ver_lorenz(X: np.ndarray,  delta_t: np.ndarray,isY=bool,isZ=bool):
     """
     Plots the specified coordinate against its delayed version with different delta_t
 
@@ -115,6 +115,15 @@ def plot_delayed_ver_lorenz(X: np.ndarray,  delta_t: np.ndarray,isZ=bool):
           ax.set_xlabel("$z$")
           ax.set_ylabel("$z+ \Delta t$")
           ax.set_zlabel("$z+ 2\Delta t$")
+          ax.set_title(f"$\Delta t ={delta_t[i]}$")
+       elif isY:
+          y=X[:,1]
+          x = np.array([y, np.roll(y, shift= delta_t[i]), np.roll(y, shift= 2 * delta_t[i])])
+          ax = fig.add_subplot(len(delta_t), 4, i+1,projection='3d')
+          ax.plot(x[0], x[1], x[2])
+          ax.set_xlabel("$y$")
+          ax.set_ylabel("$y+ \Delta t$")
+          ax.set_zlabel("$y+ 2\Delta t$")
           ax.set_title(f"$\Delta t ={delta_t[i]}$")
        else:
           x=X[:,0]
