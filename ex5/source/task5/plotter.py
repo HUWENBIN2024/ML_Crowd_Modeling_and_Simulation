@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from utils import time_delay, t2_trajectory
 
 
 def plot_pca(x: np.ndarray,
