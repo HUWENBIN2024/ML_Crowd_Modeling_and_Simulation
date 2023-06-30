@@ -8,6 +8,7 @@ task:
 ![](./imgs/dimensionality.png)
 
 ## Paper for Reference
+Notes from a Tsinghua DALAO: notes.pdf  
 [An Introduction to Diffusion Maps](https://inside.mines.edu/~whereman/papers/delaPorte-Herbst-Hereman-vanderWalt-PRASA-2008.pdf) citation: 99 (2009)  
 [A survey of dimensionality reduction techniques](https://arxiv.org/abs/1403.2877) citaion: 411  (2014)  
 [A Review on Dimensionality Reduction Techniques](https://www.worldscientific.com/doi/abs/10.1142/S0218001419500174) citation: 99 (2019)  
