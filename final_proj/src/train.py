@@ -9,29 +9,37 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 
-def train_vae(epochs, vae, opt, train_loader, test_loader, batch_size = 32):
+def train_vae(epochs, vae, opt, train_loader, test_loader, is_cifar=False):
     ep = []
     train_loss_list = []
-    test_loss_list = []
+    val_loss_list = []
     # train
     
     for epoch in range(epochs):
         train_loss = 0
-        test_loss = 0
-        try:
+        val_loss = 0
+        data_num = 0
+        val_data_num = 0
+        if is_cifar:
             for i, (x, y) in enumerate(tqdm(train_loader, desc='training')):
+                
+                x = x.reshape((len(x), -1))
                 opt.zero_grad()
+              
                 x_hat = vae(x)
                 loss = ((x - x_hat)**2).mean() + vae.encoder.kl
                 loss.backward()
                 opt.step()
                 train_loss += loss
+                data_num += len(x)
 
             with torch.no_grad():
                 for i, (x, y) in enumerate(tqdm(test_loader, desc='val')):
-                    x_hat_test = vae(x)
-                    test_loss += ((x - x_hat_test)**2).mean() + vae.encoder.kl
-        except:
+                    x = x.reshape((len(x), -1))
+                    x_hat_val = vae(x)
+                    val_loss += ((x - x_hat_val)**2).mean() + vae.encoder.kl
+                    val_data_num += len(x)
+        else:
             for i, x in enumerate(tqdm(train_loader, desc='training')):
                 opt.zero_grad()
                 x_hat = vae(x)
@@ -39,21 +47,27 @@ def train_vae(epochs, vae, opt, train_loader, test_loader, batch_size = 32):
                 loss.backward()
                 opt.step()
                 train_loss += loss
+                data_num += len(x)
+
 
             with torch.no_grad():
                 for i, x in enumerate(tqdm(test_loader, desc='val')):
-                    x_hat_test = vae(x)
-                    test_loss += ((x - x_hat_test)**2).mean() + vae.encoder.kl
+                    x_hat_val = vae(x)
+                    val_loss += ((x - x_hat_val)**2).mean() + vae.encoder.kl
+                    val_data_num += len(x)
 
         ep.append(epoch + 1) 
-        train_loss_list.append(train_loss.item() / (len(train_loader) * batch_size))
-        test_loss_list.append(test_loss.item() / (len(train_loader) * batch_size))
+        train_loss = train_loss.item() / data_num
+        train_loss_list.append(train_loss)
+        val_loss = val_loss.item() / val_data_num
+        val_loss_list.append(val_loss)
+        print('ep: ', epoch ,', train loss: ', train_loss, ', val loss: ', val_loss)
 
     plt.title("vae loss")
     plt.xlabel("steps")
     plt.ylabel("loss")
     plt.plot(ep, train_loss_list, 'red', label='training loss')
-    plt.plot(ep, test_loss_list, 'blue', label='testing loss')
+    plt.plot(ep, val_loss_list, 'blue', label='testing loss')
     plt.legend(loc="upper right")
     plt.show()
 

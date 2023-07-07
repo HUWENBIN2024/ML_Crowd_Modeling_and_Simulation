@@ -18,7 +18,7 @@ def cifar10(train_val_split = [45000, 5000], batch_size=32):
                             train=True,
                             transform=torchvision.transforms.ToTensor(),
                             download=True)
-       train_data, val_data = torch.utils.data.random_split(train_data,train_val_split)
+       train_data, val_data = torch.utils.data.random_split(train_data, train_val_split)
        test_data = torchvision.datasets.CIFAR10('../data',
                             train=False,
                             transform=torchvision.transforms.ToTensor(),
