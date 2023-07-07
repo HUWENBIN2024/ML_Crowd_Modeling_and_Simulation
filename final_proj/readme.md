@@ -7,10 +7,10 @@ task:
 - fast training.
 - visualization.
 
-1. do some survey on popular methods: PCA, Isomap,, Diffusion Map, VAE...
+2. do some survey on popular methods: PCA, Isomap,, Diffusion Map, VAE...
 -
 
-1. codind and report.
+3. codind and report.
 -
 ![](./imgs/dimensionality.png)
 
@@ -24,3 +24,7 @@ Notes from a Tsinghua DALAO: notes.pdf
 
 ## Blogs
 https://aws.amazon.com/cn/blogs/china/characteristic-engineering-of-data-centric-ai-lecture-3/   
+
+## difficulties
+1. how to fairly compare the performance over data / dim-reducted data.
+2. how to use word2vec (what corpus?)
