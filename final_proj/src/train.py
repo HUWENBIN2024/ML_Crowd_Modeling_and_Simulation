@@ -9,19 +9,21 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 
-def train_vae(epochs, vae, opt, train_loader, test_loader, is_cifar=False):
+def train_vae(epochs, vae, train_loader, val_loader, lr=0.001, is_cifar=False):
     ep = []
     train_loss_list = []
     val_loss_list = []
+
+    opt = torch.optim.Adam(vae.parameters(), lr=lr)
     # train
     
-    for epoch in range(epochs):
+    for epoch in tqdm(range(epochs)):
         train_loss = 0
         val_loss = 0
         data_num = 0
         val_data_num = 0
         if is_cifar:
-            for i, (x, y) in enumerate(tqdm(train_loader, desc='training')):
+            for i, (x, y) in enumerate(train_loader):
                 
                 x = x.reshape((len(x), -1))
                 opt.zero_grad()
@@ -34,13 +36,13 @@ def train_vae(epochs, vae, opt, train_loader, test_loader, is_cifar=False):
                 data_num += len(x)
 
             with torch.no_grad():
-                for i, (x, y) in enumerate(tqdm(test_loader, desc='val')):
+                for i, (x, y) in enumerate(val_loader):
                     x = x.reshape((len(x), -1))
                     x_hat_val = vae(x)
                     val_loss += ((x - x_hat_val)**2).mean() + vae.encoder.kl
                     val_data_num += len(x)
         else:
-            for i, x in enumerate(tqdm(train_loader, desc='training')):
+            for i, x in enumerate(train_loader):
                 opt.zero_grad()
                 x_hat = vae(x)
                 loss = ((x - x_hat)**2).mean() + vae.encoder.kl
@@ -51,7 +53,7 @@ def train_vae(epochs, vae, opt, train_loader, test_loader, is_cifar=False):
 
 
             with torch.no_grad():
-                for i, x in enumerate(tqdm(test_loader, desc='val')):
+                for i, x in enumerate(val_loader):
                     x_hat_val = vae(x)
                     val_loss += ((x - x_hat_val)**2).mean() + vae.encoder.kl
                     val_data_num += len(x)
@@ -61,7 +63,7 @@ def train_vae(epochs, vae, opt, train_loader, test_loader, is_cifar=False):
         train_loss_list.append(train_loss)
         val_loss = val_loss.item() / val_data_num
         val_loss_list.append(val_loss)
-        print('ep: ', epoch ,', train loss: ', train_loss, ', val loss: ', val_loss)
+        # print('ep: ', epoch ,', train loss: ', train_loss, ', val loss: ', val_loss)
 
     plt.title("vae loss")
     plt.xlabel("steps")
