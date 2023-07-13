@@ -34,14 +34,8 @@ def cifar10(train_val_split = [45000, 5000], batch_size=32):
 
        return train_loader, val_loader, test_loader
 
-def cifar10_latent_plot(vae, data_loader, num_batches=100):
-    for i, (x, y) in enumerate(data_loader):
-        z = vae.encoder(x)
-        z = z.detach().numpy()
-        plt.scatter(z[:, 0], z[:, 1], c=y, cmap='Set3')
-        if i > num_batches:
-            plt.colorbar()
-            break
+def cifar10_latent_plot(latent, y):
+       plt.scatter(latent[:, 0], latent[:, 1], c=y, cmap='Set3')
 
 # Swiss Roll
 def get_swiss_roll(nr_samples):
