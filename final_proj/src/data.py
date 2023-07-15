@@ -82,7 +82,7 @@ def plot_swiss_roll(nr_samples, x_k, l_color, latent_data):
 
        ax = fig.add_subplot(1,3,3)
        idx_plot = np.random.permutation(nr_samples)[0:nr_samples]
-       ax.scatter(x_k[idx_plot, 0], x_k[idx_plot, 1], c=l_color[idx_plot], cmap=plt.cm.Spectral)
+       ax.scatter(latent_data[idx_plot, 0], latent_data[idx_plot, 1], c=l_color[idx_plot], cmap=plt.cm.Spectral)
        ax.set_xlabel("x")
        ax.set_ylabel("y")
        ax.set_title("3D: Swiss Roll manifold ")
@@ -118,7 +118,7 @@ def get_word2vec_data(split=[10000, 1000, 1000], seed=3407, batch_size=32):
        test_embeddings = np.array(test_embeddings)
        test_loader = torch.utils.data.DataLoader(test_embeddings, batch_size, shuffle=False)
 
-       return [train_loader, val_loader, test_loader], [train_embeddings, val_embeddings, test_embeddings], [train_words, val_words, test_words]
+       return [train_loader, val_loader, test_loader], [train_embeddings, val_embeddings, test_embeddings], [train_words, val_words, test_words], gensim_model
 
 
 def word_embedding_plot(latent_vec, words):

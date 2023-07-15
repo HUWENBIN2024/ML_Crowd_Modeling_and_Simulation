@@ -101,7 +101,7 @@ class Encoder(nn.Module):
         mu =  self.proj2mu(x) # (B, latent_dims)
         sigma = torch.exp(self.proj2sigma(x)) # (B, latent_dims)
         z = mu + sigma * self.N.sample(mu.shape)
-        self.kl = (sigma**2 / 2 + mu**2 / 2 - torch.log(sigma) - 1/2).mean()
+        self.kl = (sigma**2 / 2 + mu**2 / 2 - torch.log(sigma) - 1/2).sum()
         return z
     
 class Decoder(nn.Module):
