@@ -2,7 +2,9 @@ import torch
 import torchvision
 import numpy as np
 import matplotlib.pyplot as plt
-
+from datafold.utils.plot import plot_pairwise_eigenvector
+from matplotlib import ticker
+from matplotlib import pylab
 from sklearn.datasets import make_swiss_roll
 
 import gensim.downloader
@@ -88,6 +90,57 @@ def plot_swiss_roll(nr_samples, x_k, l_color, latent_data):
        ax.set_title("3D: Swiss Roll manifold ")
        
        fig.show()
+#swissroll_sun
+def plot_swiss_roll_damp(nr_samples,  x_k, l_color):
+        """
+        Task: part2
+        Plot 3d Swiss-roll dataset
+        
+        """
+        fig = plt.figure(figsize=(10,5))
+        
+        ax = fig.add_subplot(1,2,1)
+        idx_plot = np.random.permutation(nr_samples)[0:nr_samples]
+        ax.scatter(x_k[idx_plot, 0], x_k[idx_plot, 2], c=l_color[idx_plot], cmap=plt.cm.Spectral)
+        ax.set_xlabel("x")
+        ax.set_ylabel(f"z")
+        ax.set_title("2D: Swiss Roll manifold ")
+
+        ax = fig.add_subplot(1,2,2, projection="3d")
+        idx_plot = np.random.permutation(nr_samples)[0:nr_samples]
+        ax.scatter(x_k[idx_plot, 0], x_k[idx_plot, 1],x_k[idx_plot, 2], c=l_color[idx_plot], cmap=plt.cm.Spectral)
+        ax.set_xlabel("x")
+        ax.set_ylabel("y")
+        ax.set_zlabel("z")
+        ax.set_title("3D: Swiss Roll manifold ")
+        
+        fig.show()
+
+def plot_diffusion_maps_swissRoll(nr_samples, L, phi_l, lambda_l ,time=None):
+     """
+     Plot graphs for  different parts.
+     """
+     print(f"Print {L} largest eigenvalues for the corresponding dataset: \n {lambda_l}")
+     idx_plot = np.random.permutation(nr_samples)[0:nr_samples]
+     plot_pairwise_eigenvector(
+                eigenvectors=phi_l[idx_plot,:],
+                n=1,
+                fig_params=dict(figsize=[15, 10]),
+                scatter_params=dict(cmap=plt.cm.Spectral,c=time[idx_plot])
+            )
+       
+     plt.show()
+
+def plot_dmap_2d(points, points_color, title):
+    fig, ax = plt.subplots(figsize=(7, 4), facecolor="white", constrained_layout=True)
+    fig.suptitle(title, size=16)
+    
+    x, y = points.T
+    ax.scatter(x, y, c=points_color, s=0.5, alpha=0.8)
+    ax.set_title(title)
+    ax.xaxis.set_major_formatter(ticker.NullFormatter())
+    ax.yaxis.set_major_formatter(ticker.NullFormatter())
+    plt.show()
 
 # Word2vec
 def get_word_embedding_word2vec(num_data_sample=10000, seed=3407, gensim_model=None):
@@ -127,3 +180,52 @@ def word_embedding_plot(latent_vec, words):
        plt.title("Word Embedding Space",size=20)
        for i, word in enumerate(words):
               plt.annotate(word,xy=(latent_vec[i,0],latent_vec[i,1]))
+
+#word2vwc_sun
+
+def plot_word_embedding_damp(X_dmap, words):
+    pylab.figure(figsize=(16, 9))
+    for i, label in enumerate(words[:100]):
+        x, y = X_dmap[i, :]
+        pylab.scatter(x, y)
+        pylab.annotate(label, xy=(x, y), xytext=(5, 2), textcoords='offset points',
+                        ha='right', va='bottom')
+    pylab.show()
+
+
+# cifar
+def cifar10_dmap(data_loader, num_examples):
+    train_labels = np.array([])
+    train_images = np.empty((0, 3072), dtype=np.float32)
+
+    indices = np.random.choice(len(data_loader.dataset), size=num_examples, replace=False)
+
+    for idx, (images, labels) in enumerate(data_loader):
+        if idx in indices:
+            images = images.view(images.size(0), -1)
+            train_labels = np.append(train_labels, labels.numpy())
+            train_images = np.concatenate((train_images, images.numpy()), axis=0)
+        
+        if len(train_labels) >= num_examples:
+            break
+
+    print("Train labels shape:", train_labels.shape)
+    print("Train images shape:", train_images.shape)
+
+    return train_images, train_labels
+
+def plot_diffusion_maps_cifar(L, phi_l, lambda_l ,labels):
+     """
+     Plot graphs for  different parts.
+     """
+     print(f"Print {L} largest eigenvalues for the corresponding dataset: \n {lambda_l}")
+     plot_pairwise_eigenvector(
+            eigenvectors=phi_l[:,1:],
+            n=0,
+            idx_start=1,
+            fig_params=dict(figsize=(10, 10)),
+            scatter_params=dict(c=labels)
+) 
+       
+     plt.show()
+
