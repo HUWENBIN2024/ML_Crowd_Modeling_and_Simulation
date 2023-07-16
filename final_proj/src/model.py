@@ -6,6 +6,8 @@ import torch.distributions
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy as sp
+import datafold.pcfold as pfold
+from datafold.dynfold import DiffusionMaps
 
 # class Encoder(nn.Module):
 #     def __init__(self, c_hid, latent_dim):

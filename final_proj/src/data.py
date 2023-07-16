@@ -6,7 +6,6 @@ from datafold.utils.plot import plot_pairwise_eigenvector
 from matplotlib import ticker
 from matplotlib import pylab
 from sklearn.datasets import make_swiss_roll
-
 import gensim.downloader
 
 # Cifar10
@@ -91,7 +90,7 @@ def plot_swiss_roll(nr_samples, x_k, l_color, latent_data):
        
        fig.show()
 #swissroll_sun
-def plot_swiss_roll_damp(nr_samples,  x_k, l_color):
+def plot_swiss_roll_dmap(nr_samples,  x_k, l_color):
         """
         Task: part2
         Plot 3d Swiss-roll dataset
