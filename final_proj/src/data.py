@@ -135,7 +135,7 @@ def plot_dmap_2d(points, points_color, title):
     fig.suptitle(title, size=16)
     
     x, y = points.T
-    ax.scatter(x, y, c=points_color, s=0.5, alpha=0.8)
+    ax.scatter(x, y, c=points_color, s=0.5, alpha=0.8,cmap=plt.cm.Spectral)
     ax.set_title(title)
     ax.xaxis.set_major_formatter(ticker.NullFormatter())
     ax.yaxis.set_major_formatter(ticker.NullFormatter())
