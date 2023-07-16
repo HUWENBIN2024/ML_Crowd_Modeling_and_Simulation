@@ -4,8 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from sklearn.datasets import make_swiss_roll
-import tensorflow as tf
-from tensorflow import keras
+
 
 import gensim.downloader
 
@@ -116,3 +115,10 @@ def get_word2vec_data_loader(split=[10000, 1000, 1000], seed=3407, batch_size=32
        test_loader = torch.utils.data.DataLoader(test_embeddings, batch_size, shuffle=True)
 
        return train_loader, val_loader, test_loader
+
+def word_embedding_plot(latent_vec, words):
+       plt.figure(figsize=(20, 20))
+       plt.scatter(latent_vec[:,0],latent_vec[:,1],linewidths=1,color='blue')
+       plt.title("Word Embedding Space",size=20)
+       for i, word in enumerate(words):
+              plt.annotate(word,xy=(latent_vec[i,0],latent_vec[i,1]))

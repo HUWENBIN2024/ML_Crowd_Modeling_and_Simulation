@@ -50,7 +50,7 @@ def plot_diffusion_maps_cifar(L, phi_l, lambda_l ,labels):
      """
      print(f"Print {L} largest eigenvalues for the corresponding dataset: \n {lambda_l}")
      plot_pairwise_eigenvector(
-            eigenvectors=phi_l[:,1:],
+            eigenvectors=phi_l[:,:],
             n=0,
             idx_start=1,
             fig_params=dict(figsize=(10, 10)),

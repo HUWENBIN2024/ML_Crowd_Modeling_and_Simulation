@@ -9,7 +9,6 @@ import scipy as sp
 from datafold.dynfold import DiffusionMaps
 import datafold.pcfold as pfold
 
-import tensorflow as tf
 
 
 # class Encoder(nn.Module):
@@ -159,14 +158,14 @@ class DiffusionMap:
          # Compute the kernel and the eigenfunctions 
          dmap = DiffusionMaps(
              kernel=pfold.GaussianKernel(epsilon=Data_pcm.kernel.epsilon),
-             n_eigenpairs=L,
+             n_eigenpairs=L+1,
              dist_kwargs=dict(cut_off=Data_pcm.cut_off),
          )
          dmap = dmap.fit(Data_pcm)
          phi_l, lambda_l = dmap.eigenvectors_, dmap.eigenvalues_
          if isWordVec:
             dmap = dmap.set_target_coords([1, 2])
-            word_dmap = dmap.transform(dmap )
+            word_dmap = dmap.transform(dmap)
             return word_dmap
          else: 
            return phi_l, lambda_l
