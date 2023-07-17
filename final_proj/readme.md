@@ -1,5 +1,20 @@
 # Final Project
 Final project of Group J in TUM MLCMS 2023S.
+
+## Installation
+```
+torch
+torchvision
+scikit-learn
+datafold
+tqdm
+gensim
+matplotlib
+numpy
+seaborn
+```
+
+
 ## Topic: Dimensionality Reduciton.
 task:
 1. what is dimensionality? why? motivation.
@@ -8,10 +23,10 @@ task:
 - visualization.
 
 2. do some survey on popular methods: PCA, Isomap,, Diffusion Map, VAE...
--
+
 
 3. codind and report.
--
+
 ![](./imgs/dimensionality.png)
 
 ## Paper for Reference

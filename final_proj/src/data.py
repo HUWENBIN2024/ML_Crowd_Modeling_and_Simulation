@@ -11,8 +11,12 @@ import gensim.downloader
 # Cifar10
 def cifar10(train_val_split = [45000, 5000], batch_size=32):
        '''
-       return dataloader with a specific batch size.
-       pixel values are scale to [0, 1].
+       parameter
+       train_val_split: list, the split of the train, val dataset
+       batch_size: the size of a batch
+
+       return 
+       dataloaders with a specific batch size.
        '''
        train_data = torchvision.datasets.CIFAR10('../data',
                             train=True,
@@ -36,13 +40,28 @@ def cifar10(train_val_split = [45000, 5000], batch_size=32):
        return train_loader, val_loader, test_loader
 
 def cifar10_latent_plot(latent, y):
+       '''
+       plot the latent space of cifar10 dataset.
+
+       param
+       latent: (N, 2), latent points
+       y: label of those points
+
+       return None
+       '''
        plt.scatter(latent[:, 0], latent[:, 1], c=y, cmap='Set3')
 
 # Swiss Roll
 def get_swiss_roll(nr_samples):
        """
-       Task: part2
        Get 3d  Swiss-roll dataset 
+
+       param
+       paramnr_samples: number of samples
+
+       return
+       data: swiss roll data points, (paramnr_samples, 3)
+       time: time series
        """
        if nr_samples  == 0:
               return None
@@ -53,6 +72,18 @@ def get_swiss_roll(nr_samples):
 
 
 def swiss_roll_data(split=[3000, 1500, 1500], batch_size=32):
+       '''
+       generate swiss roll datasets and use them to build dataloaders
+
+       param
+       split: train, val, test split
+       batch_size: the size of a batch
+       
+       return 
+       dataloader: dataloaders with a specific batch size.
+       data: train, val, test data
+       time: times series
+       '''
        train_data, train_time = get_swiss_roll(split[0])
        val_data, val_time = get_swiss_roll(split[1])
        test_data, test_time = get_swiss_roll(split[2])
@@ -64,6 +95,17 @@ def swiss_roll_data(split=[3000, 1500, 1500], batch_size=32):
        return [train_loader, val_loader, test_loader], [train_data, val_data, test_data], [train_time, val_time, test_time]
 
 def plot_swiss_roll(nr_samples, x_k, l_color, latent_data):
+       '''
+       plot swiss roll in 3d space and the projection to xy plane.
+
+       param
+       nr_samples: number of samples
+       x_k: data points, (N, 3)
+       l_color: color setup
+       latent_data: data points in latent space
+
+       return None
+       '''
        fig = plt.figure(figsize=(15,5))
        
        ax = fig.add_subplot(1,3,1)
@@ -89,6 +131,7 @@ def plot_swiss_roll(nr_samples, x_k, l_color, latent_data):
        ax.set_title("3D: Swiss Roll manifold ")
        
        fig.show()
+
 #swissroll_sun
 def plot_swiss_roll_dmap(nr_samples,  x_k, l_color):
         """
@@ -144,6 +187,15 @@ def plot_dmap_2d(points, points_color, title):
 # Word2vec
 def get_word_embedding_word2vec(num_data_sample=10000, seed=3407, gensim_model=None):
        '''
+       get word2vec embeddings from gensim
+       
+       param
+       num_data_sample: number of samples
+       seed: random seed
+       gensim_model: gensim model
+
+       return
+       words: original words
        embedding: np.array, shape: (num_data_sample, 300)
        '''
        if seed != None:
@@ -155,6 +207,19 @@ def get_word_embedding_word2vec(num_data_sample=10000, seed=3407, gensim_model=N
        return words, embeddings
 
 def get_word2vec_data(split=[10000, 1000, 1000], seed=3407, batch_size=32):
+       '''
+       get train, val, test data from gensim model, build data loader for them
+
+       param
+       split: train, val, test split
+       seed: random seed
+       batch_size: the size of a batch
+
+       return 
+       dataloader: dataloaders with a specific batch size.
+       embeddings: word2vec embeddings 
+       words: origal words
+       '''
        np.random.seed(seed)
        print(gensim.downloader.BASE_DIR)
        gensim_model  = gensim.downloader.load("word2vec-google-news-300")
@@ -174,6 +239,13 @@ def get_word2vec_data(split=[10000, 1000, 1000], seed=3407, batch_size=32):
 
 
 def word_embedding_plot(latent_vec, words):
+       '''
+       plot the latent space of word2vec
+
+       param
+       latent_vec: latent points, (N, 2)
+       words: corresponding words
+       '''
        plt.figure(figsize=(20, 20))
        plt.scatter(latent_vec[:,0],latent_vec[:,1],linewidths=1,color='blue')
        plt.title("Word Embedding Space",size=20)
