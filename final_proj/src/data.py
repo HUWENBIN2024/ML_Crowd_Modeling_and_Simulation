@@ -135,7 +135,7 @@ def plot_swiss_roll(nr_samples, x_k, l_color, latent_data):
 #swissroll_sun
 def plot_swiss_roll_dmap(nr_samples,  x_k, l_color):
         """
-        Plot 3d Swiss-roll dataset
+        Plot 2d and 3d Swiss-roll dataset
         
         """
         fig = plt.figure(figsize=(10,5))
@@ -159,7 +159,7 @@ def plot_swiss_roll_dmap(nr_samples,  x_k, l_color):
 
 def plot_diffusion_maps_swissRoll(nr_samples, L, phi_l, lambda_l ,time=None):
      """
-     Plot graphs for  different eigenvectors in Diffusion Maps.
+     Plot graphs for  different eigenvectors applied with Diffusion Maps.
      """
      print(f"Print {L} largest eigenvalues for the corresponding dataset: \n {lambda_l}")
      idx_plot = np.random.permutation(nr_samples)[0:nr_samples]
@@ -272,7 +272,15 @@ def plot_word_embedding_damp(X_dmap, words):
 # cifar
 def cifar10_dmap(data_loader, num_examples):
     """
-     Plot images from data_loader.
+     Get images, labels from the given data_loader
+     param
+       data_loader: the given data_loader
+       num_examples: number of samples we want to obtain from the given data_loader
+
+       return 
+       train_images obtain the data images from data_loader
+       train_labels: obtain the data labels from data_loader
+
      """
     train_labels = np.array([])
     train_images = np.empty((0, 3072), dtype=np.float32)
