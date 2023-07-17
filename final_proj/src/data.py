@@ -135,7 +135,6 @@ def plot_swiss_roll(nr_samples, x_k, l_color, latent_data):
 #swissroll_sun
 def plot_swiss_roll_dmap(nr_samples,  x_k, l_color):
         """
-        Task: part2
         Plot 3d Swiss-roll dataset
         
         """
@@ -160,7 +159,7 @@ def plot_swiss_roll_dmap(nr_samples,  x_k, l_color):
 
 def plot_diffusion_maps_swissRoll(nr_samples, L, phi_l, lambda_l ,time=None):
      """
-     Plot graphs for  different parts.
+     Plot graphs for  different eigenvectors in Diffusion Maps.
      """
      print(f"Print {L} largest eigenvalues for the corresponding dataset: \n {lambda_l}")
      idx_plot = np.random.permutation(nr_samples)[0:nr_samples]
@@ -174,6 +173,9 @@ def plot_diffusion_maps_swissRoll(nr_samples, L, phi_l, lambda_l ,time=None):
      plt.show()
 
 def plot_dmap_2d(points, points_color, title):
+    """
+     Plot the selected eigenvectors in Diffusion Maps in 2D.
+     """
     fig, ax = plt.subplots(figsize=(7, 4), facecolor="white", constrained_layout=True)
     fig.suptitle(title, size=16)
     
@@ -255,6 +257,9 @@ def word_embedding_plot(latent_vec, words):
 #word2vwc_sun
 
 def plot_word_embedding_damp(X_dmap, words):
+    """
+     Plot word embedding in Diffusion Maps after dimensionality reduction.
+     """
     pylab.figure(figsize=(16, 9))
     for i, label in enumerate(words[:100]):
         x, y = X_dmap[i, :]
@@ -266,6 +271,9 @@ def plot_word_embedding_damp(X_dmap, words):
 
 # cifar
 def cifar10_dmap(data_loader, num_examples):
+    """
+     Plot images from data_loader.
+     """
     train_labels = np.array([])
     train_images = np.empty((0, 3072), dtype=np.float32)
 
@@ -287,7 +295,7 @@ def cifar10_dmap(data_loader, num_examples):
 
 def plot_diffusion_maps_cifar(L, phi_l, lambda_l ,labels):
      """
-     Plot graphs for  different parts.
+     Plot images from Cifar10 after reducding the dimension by Diffusion Maps.
      """
      print(f"Print {L} largest eigenvalues for the corresponding dataset: \n {lambda_l}")
      plot_pairwise_eigenvector(
