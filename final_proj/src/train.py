@@ -10,6 +10,18 @@ from tqdm import tqdm
 
 
 def train_vae(epochs, vae, train_loader, val_loader, lr=0.001, is_cifar=False):
+    '''
+    training loop for vae and plot the loss curve
+
+    param:
+    epochs: the number of epochs
+    vae: vae torch model
+    train_loader, val_loader: data loader
+    lr: learning rate, default: 0.001
+    is_cifar: whether the dataset for training is cifar
+
+    return None
+    '''
     ep = []
     train_loss_list = []
     val_loss_list = []
@@ -74,6 +86,18 @@ def train_vae(epochs, vae, train_loader, val_loader, lr=0.001, is_cifar=False):
     plt.show()
 
 def train_resnet18(epochs, model, opt, train_loader, val_loader, batch_size): 
+    '''
+    train a resnet18 and plot the result
+
+    param:
+    epochs: the number of epochs
+    model: torch model
+    opt: optimizer (adam, sgd)
+    train_loader, val_loader: data loader
+    batch_size: the size of a batch
+
+    return None
+    '''
     ep = []
     train_loss_list = []
     test_loss_list = []
