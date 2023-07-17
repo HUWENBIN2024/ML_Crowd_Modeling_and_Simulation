@@ -10,6 +10,9 @@ import datafold.pcfold as pfold
 from datafold.dynfold import DiffusionMaps
 
 class Encoder(nn.Module):
+    '''
+    Encoder of our vae model, it consists 2 linear layers.
+    '''
     def __init__(self, input_dimension, hidden_dims, latent_dims):
         super(Encoder, self).__init__()
         self.linear1 = nn.Linear(input_dimension, hidden_dims)
@@ -34,6 +37,9 @@ class Encoder(nn.Module):
         return z
     
 class Decoder(nn.Module):
+    '''
+    Decoder of our vae model, it consists 2 linear layers.
+    '''
     def __init__(self, input_dimension, hidden_dims, latent_dims):
         super(Decoder, self).__init__()
         self.linear1 = nn.Linear(latent_dims, hidden_dims)
@@ -46,6 +52,9 @@ class Decoder(nn.Module):
         return z
     
 class VAE(nn.Module):
+    '''
+    VAE model, the combination of an encoder and a decoder.
+    '''
     def __init__(self, input_dimension, hidden_dims, latent_dims):
         super(VAE, self).__init__()
         self.encoder = Encoder(input_dimension, hidden_dims, latent_dims)
