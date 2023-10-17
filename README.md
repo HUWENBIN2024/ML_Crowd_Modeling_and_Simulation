@@ -4,9 +4,9 @@ Machine learning (ML) crowd modeling and simulation refers to the use of machine
 
 # Team Members
 
-**Wenbin Hu**: Yr3 UG student in HKUST, major in computer science.  
-**Yilin Tang**: Master student in TUM, major in data engineering and analytics.  
-**Mei Sun**: Master student in TUM, major in data engineering and analytics.   
+**Wenbin Hu**: Yr3 UG student in HKUST, major in computer science.   
+**Yilin Tang**: Master student in TUM, major in data engineering and analytics.    
+**Mei Sun**: Master student in TUM, major in data engineering and analytics.     
 
 # Tasks
 
